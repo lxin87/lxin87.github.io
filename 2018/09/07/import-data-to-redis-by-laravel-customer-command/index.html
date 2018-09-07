@@ -103,7 +103,7 @@
 <meta property="og:description" content="laravel通过自定义命令导入数据到redis集合里[TOC] 背景目前网站浏量很大数据库压力也上来了，经过排查发现都是一些垃圾流量，主要入口是搜索和tag。目前的解决办法是：">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNbRwgy1fv12wmhqebj31jc0c6tay.jpg">
-<meta property="og:updated_time" content="2018-09-07T09:29:49.084Z">
+<meta property="og:updated_time" content="2018-09-07T09:35:58.055Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用laravel自定义命令批量导入数据到redis集合里">
 <meta name="twitter:description" content="laravel通过自定义命令导入数据到redis集合里[TOC] 背景目前网站浏量很大数据库压力也上来了，经过排查发现都是一些垃圾流量，主要入口是搜索和tag。目前的解决办法是：">
@@ -403,6 +403,7 @@
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
 <li>使用laravel自定义命令，把整理好的tag数据同步至redis里</li>
 <li>在相应的程序部分加入判断逻辑</li>
+<li>用定时任务定时执行写好的laravel命令，用于同步数据</li>
 </ul>
 <h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="环境信息"><a href="#环境信息" class="headerlink" title="环境信息"></a>环境信息</h3><ul>
 <li>laravel 5.6</li>
