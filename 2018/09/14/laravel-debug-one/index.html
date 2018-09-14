@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="laravel,踩坑," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Laravel踩坑汇总(一)[TOC] 大文件上传问题问题最近在做视频部分的功能，在上传视频的时候，遇到了一些问题，有文件上传信息，但是某些信息获取不到，比如：">
+<meta name="keywords" content="laravel,踩坑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel踩坑汇总(一)">
+<meta property="og:url" content="http://sidlee.xyz/2018/09/14/laravel-debug-one/index.html">
+<meta property="og:site_name" content="sid.lee&#39;s blog">
+<meta property="og:description" content="Laravel踩坑汇总(一)[TOC] 大文件上传问题问题最近在做视频部分的功能，在上传视频的时候，遇到了一些问题，有文件上传信息，但是某些信息获取不到，比如：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/0069RVTdgy1fv8vr9cscgj30zb07dwej.jpg">
+<meta property="og:updated_time" content="2018-09-14T09:10:02.521Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel踩坑汇总(一)">
+<meta name="twitter:description" content="Laravel踩坑汇总(一)[TOC] 大文件上传问题问题最近在做视频部分的功能，在上传视频的时候，遇到了一些问题，有文件上传信息，但是某些信息获取不到，比如：">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/0069RVTdgy1fv8vr9cscgj30zb07dwej.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sidlee.xyz/2018/09/14/laravel-debug-one/"/>
+
+
+
+
+
+  <title>Laravel踩坑汇总(一) | sid.lee's blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?515be4fd903b1505de134f98e7b226bc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sid.lee's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">php & golang</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sidlee.xyz/2018/09/14/laravel-debug-one/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sid Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/0069RVTdgy1fv044x9dh7j305k05kglh.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sid.lee's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Laravel踩坑汇总(一)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-14T17:07:33+08:00">
+                2018-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/laravel/" itemprop="url" rel="index">
+                    <span itemprop="name">laravel</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/09/14/laravel-debug-one/" class="leancloud_visitors" data-flag-title="Laravel踩坑汇总(一)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Laravel踩坑汇总-一"><a href="#Laravel踩坑汇总-一" class="headerlink" title="Laravel踩坑汇总(一)"></a>Laravel踩坑汇总(一)</h1><p>[TOC]</p>
+<h2 id="大文件上传问题"><a href="#大文件上传问题" class="headerlink" title="大文件上传问题"></a>大文件上传问题</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>最近在做视频部分的功能，在上传视频的时候，遇到了一些问题，有文件上传信息，但是某些信息获取不到，比如：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public function store($request)&#123;</span><br><span class="line">    if($request-&gt;has(&apos;videos&apos;))&#123;</span><br><span class="line">        $videos = $request-&gt;file(&apos;videos&apos;);</span><br><span class="line">        </span><br><span class="line">        foreach($videos as $file)&#123;</span><br><span class="line">            dd($file-&gt;getRealPath(),$file-&gt;getPathName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面程序在打印<code>getRealPath()</code>和<code>getPathName()</code>，这两个方法时发现是空，正常情况下<code>getRealPath()</code>方法会返回临时文件的路径，后来偶尔间发现，是需要修改php.ini的一些参数 </p>
+<h3 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h3><p>打开php.ini文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">post_max_size=128M</span><br><span class="line">upload_max_size=128M</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>post_max_size</code>这个参数，如果你上传的文件(我的文件是45M,默认是32M)超过默认的设置，它会报一个异常，但是没有错误信息，但顺着错误堆栈信息，发现有一个错误是:<code>Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize</code>,根据字面意思就是在校验post请求的数据大小时，发生异常了，去google了发下是需要设置下<code>post_max_size</code>即可。</li>
+<li><code>post_max_size</code>设置好之后，虽然没有报错，但是文件的一些文件的信息获取不到，比如临时文件路径什么的，这就头大了。后来偶然发现，还有一个<code>upload_max_size</code>，设置完就OK了。</li>
+</ol>
+<h2 id="Put请求中有文件上传，获取不到相应数据的问题"><a href="#Put请求中有文件上传，获取不到相应数据的问题" class="headerlink" title="Put请求中有文件上传，获取不到相应数据的问题"></a>Put请求中有文件上传，获取不到相应数据的问题</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>目前所有的项目都是基于Vue+Laravel前后端分离，有一个功能在添加的时候，有个封面图片，而编辑的时候，同样也可能会修改封面图片，而根据<code>restfull api</code>的格式要求，一般来说更新操作一般是用的<code>put</code>操作，但是在<code>put</code>请求下如果有文件上传，则没办法获取到相关的文件上传信息</p>
+<h3 id="方案-1"><a href="#方案-1" class="headerlink" title="方案"></a>方案</h3><p>实际上之前在做开发的时候遇到过，只是理解的没有那么深刻，那时候还没有做前后端分离，还是传统的在<code>blade</code>模板里做相应的渲染输出，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># routes/web.php</span><br><span class="line"></span><br><span class="line">Route::resource(&apos;user,&apos;UserController&apos;)</span><br><span class="line"></span><br><span class="line"># resource/view/user/edit.blade.php</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&lt;form action=&quot;&#123;&#123;route(&apos;user.update&apos;,[&apos;id&apos;=&gt;$id])&#125;&#125;&quot; method=&quot;post&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;_method&quot; value=&quot;put&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;/form&gt;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>上面是之前做功能的时候，使用的处理方法，实际上同样的方法也适用于<code>delete</code>方法。</p>
+<p>这次在使用<code>vue</code>前后端分离的时候，也同样遇到问题了，一时半会儿没想起来，在网上查了下，上面的解决办法也同样适合用<code>vue</code>.</p>
+<p>参考资料：<br><a href="https://github.com/laravel/framework/issues/13457" target="_blank" rel="noopener">https://github.com/laravel/framework/issues/13457</a></p>
+<h2 id="关于proc-open的一些问题"><a href="#关于proc-open的一些问题" class="headerlink" title="关于proc_open的一些问题"></a>关于proc_open的一些问题</h2><h3 id="背景-1"><a href="#背景-1" class="headerlink" title="背景"></a>背景</h3><p>最近遇到两次关于<code>proc_open</code>的错误，两次都是在composer的情况下遇到的，如果下</p>
+<ol>
+<li><img src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv8vr9cscgj30zb07dwej.jpg" alt=""></li>
+</ol>
+<p>通过图片里的异常我们可以得到，是因为proc_open这个函数被禁用掉了</p>
+<ol start="2">
+<li>最近买了一台阿里云的主机，是低配版的，在上面安装<code>laravel</code>，使用<code>composer install</code> 安装某个扩展包的时候，抛出<code>proc_open(): fork failed - Cannot allocate memory</code> 这个异常。从字面理解，就是不能分配更多内存的意思，于是在linux下使用 <code>free -m</code> 发现基本上内存被占完了。而且也没有设置<code>swap内存</code></li>
+</ol>
+<h3 id="方案-2"><a href="#方案-2" class="headerlink" title="方案"></a>方案</h3><p>1.如果<code>proc_open</code>函数被禁用掉，则打开<code>php.ini</code>文件，查找<code>disable_functions</code>，把这个函数从禁用列表里去掉</p>
+<p>2.如果是内存不足，则调整下<code>swap内存</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">free -m</span><br><span class="line"></span><br><span class="line">total used free shared buffers cached</span><br><span class="line">Mem: 2048 357 1690 0 0 237</span><br><span class="line">-/+ buffers/cache: 119 1928</span><br><span class="line">Swap: 0 0 0 //交换内存未设置</span><br><span class="line">To enable the swap you can use for example:</span><br><span class="line"></span><br><span class="line">//设置交换分区</span><br><span class="line">/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024</span><br><span class="line">/sbin/mkswap /var/swap.1</span><br><span class="line">/sbin/swapon /var/swap.1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注: <code>proc_open</code>函数是一个很敏感的函数，在使用的时候，一定要多注意。</p>
+</blockquote>
+<p><code>proc_open</code>介绍:<a href="http://php.net/manual/zh/function.proc-open.php" target="_blank" rel="noopener">http://php.net/manual/zh/function.proc-open.php</a></p>
+<h2 id="Laravel设置redi为缓存，页面打开报错的处理办法"><a href="#Laravel设置redi为缓存，页面打开报错的处理办法" class="headerlink" title="Laravel设置redi为缓存，页面打开报错的处理办法"></a>Laravel设置redi为缓存，页面打开报错的处理办法</h2><h3 id="背景-2"><a href="#背景-2" class="headerlink" title="背景"></a>背景</h3><p>新的项目在部署的时候，在<code>.env</code>里设置了<code>cache_driver=reids</code>，刷新页面报了一大堆错误，顺着堆栈找到了一段错误信息，<code>MISCONF Redis is configured to save RDB snapshots, but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check Redis logs for details about the error.</code>意思就是Redis被配置为保存数据库快照，但它目前不能持久化到硬盘。</p>
+<h3 id="方案-3"><a href="#方案-3" class="headerlink" title="方案"></a>方案</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 两种方案</span><br><span class="line"># 方法一</span><br><span class="line">redis-cli host port </span><br><span class="line">127.0.0.1&gt; config set stop-writes-on-bgsave-error no</span><br><span class="line"></span><br><span class="line"># 方法二</span><br><span class="line">vi /usr/local/redis/conf/redis.conf</span><br><span class="line">stop-writes-on-bgsave-error yes </span><br><span class="line">wq // 保存退出</span><br><span class="line"></span><br><span class="line">#重启redis即可</span><br></pre></td></tr></table></figure>
+<h2 id="Larave连接mssql乱码"><a href="#Larave连接mssql乱码" class="headerlink" title="Larave连接mssql乱码"></a>Larave连接mssql乱码</h2><h3 id="背景-3"><a href="#背景-3" class="headerlink" title="背景"></a>背景</h3><p>公司的一些老项目还是使用的<code>mssql</code>数据库，目前使用的框架是<code>laravel</code>，而服务器是<code>centos</code>，环境搭建成功之后，出现乱码，</p>
+<h3 id="方案-4"><a href="#方案-4" class="headerlink" title="方案"></a>方案</h3><p>其实<code>linux</code>下<code>php</code>连接<code>mssql</code>，是通过<code>pdo_sqlsrv</code> 和<code>pdo_dblib</code>,而<code>pdo_dblib</code>则依赖一个<code>freetds</code>的东西，而乱码的问题就是出在<code>freetds</code>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># /etc/freetds.conf</span><br><span class="line">vi /etc/freetds.conf</span><br><span class="line"></span><br><span class="line">[global] //注意，是这个节点</span><br><span class="line"></span><br><span class="line">//默认情况下，这一行是注释的，而且版本号是一个其它数字，比如我的是4.2</span><br><span class="line">tds version = 8.0</span><br></pre></td></tr></table></figure>
+<p>网上的其它方法说要在<code>[global]</code>段加一行<code>client charset = UTF8</code>，如果上面还不行，就把这行加上试下，不过我的没有加，直接修改好了之后，乱码就解决了</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/laravel/" rel="tag"># laravel</a>
+          
+            <a href="/tags/踩坑/" rel="tag"># 踩坑</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/07/import-data-to-redis-by-laravel-customer-command/" rel="next" title="使用laravel自定义命令批量导入数据到redis集合里">
+                <i class="fa fa-chevron-left"></i> 使用laravel自定义命令批量导入数据到redis集合里
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv044x9dh7j305k05kglh.jpg"
+               alt="Sid Lee" />
+          <p class="site-author-name" itemprop="name">Sid Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description">记录点滴领悟。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel踩坑汇总-一"><span class="nav-number">1.</span> <span class="nav-text">Laravel踩坑汇总(一)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大文件上传问题"><span class="nav-number">1.1.</span> <span class="nav-text">大文件上传问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.1.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案"><span class="nav-number">1.1.2.</span> <span class="nav-text">方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Put请求中有文件上传，获取不到相应数据的问题"><span class="nav-number">1.2.</span> <span class="nav-text">Put请求中有文件上传，获取不到相应数据的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于proc-open的一些问题"><span class="nav-number">1.3.</span> <span class="nav-text">关于proc_open的一些问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel设置redi为缓存，页面打开报错的处理办法"><span class="nav-number">1.4.</span> <span class="nav-text">Laravel设置redi为缓存，页面打开报错的处理办法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-2"><span class="nav-number">1.4.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案-3"><span class="nav-number">1.4.2.</span> <span class="nav-text">方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Larave连接mssql乱码"><span class="nav-number">1.5.</span> <span class="nav-text">Larave连接mssql乱码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-3"><span class="nav-number">1.5.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案-4"><span class="nav-number">1.5.2.</span> <span class="nav-text">方案</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sid Lee</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("jtTza3kPO86OkRbmhoMmJ6hS-gzGzoHsz", "apDrFIixsAly3WEeOGyzWSGr");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
