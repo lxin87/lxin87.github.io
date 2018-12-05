@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mongodb," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="MongoDB关联关系[toc] 一对一在设计的时候，应该优先考试内嵌方式，如果内嵌方式满足不了，再使用引用方式，主要原因有：  内嵌方式性能最高，但大小最大为16MB  而引用方式也就意味着把数据分别存在两个集合当，而Mongodb是不支持事务的，所以，在一些强事务场景是不适合的">
+<meta name="keywords" content="mongodb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB关联关系">
+<meta property="og:url" content="http://sidlee.xyz/2018/12/05/mongodb-relations/index.html">
+<meta property="og:site_name" content="sid.lee&#39;s blog">
+<meta property="og:description" content="MongoDB关联关系[toc] 一对一在设计的时候，应该优先考试内嵌方式，如果内嵌方式满足不了，再使用引用方式，主要原因有：  内嵌方式性能最高，但大小最大为16MB  而引用方式也就意味着把数据分别存在两个集合当，而Mongodb是不支持事务的，所以，在一些强事务场景是不适合的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-12-05T03:30:21.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB关联关系">
+<meta name="twitter:description" content="MongoDB关联关系[toc] 一对一在设计的时候，应该优先考试内嵌方式，如果内嵌方式满足不了，再使用引用方式，主要原因有：  内嵌方式性能最高，但大小最大为16MB  而引用方式也就意味着把数据分别存在两个集合当，而Mongodb是不支持事务的，所以，在一些强事务场景是不适合的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://sidlee.xyz/2018/12/05/mongodb-relations/"/>
+
+
+
+
+
+  <title>MongoDB关联关系 | sid.lee's blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?515be4fd903b1505de134f98e7b226bc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">sid.lee's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">php & golang</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://sidlee.xyz/2018/12/05/mongodb-relations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sid Lee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://ws2.sinaimg.cn/large/0069RVTdgy1fv044x9dh7j305k05kglh.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="sid.lee's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MongoDB关联关系</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-05T11:28:21+08:00">
+                2018-12-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mongodb/" itemprop="url" rel="index">
+                    <span itemprop="name">mongodb</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/12/05/mongodb-relations/" class="leancloud_visitors" data-flag-title="MongoDB关联关系">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MongoDB关联关系"><a href="#MongoDB关联关系" class="headerlink" title="MongoDB关联关系"></a>MongoDB关联关系</h1><p>[toc]</p>
+<h2 id="一对一"><a href="#一对一" class="headerlink" title="一对一"></a>一对一</h2><p>在设计的时候，应该优先考试<code>内嵌</code>方式，如果内嵌方式满足不了，再使用引用方式，主要原因有：</p>
+<ul>
+<li>内嵌方式性能最高，但大小最大为16MB</li>
+</ul>
+<p>而引用方式也就意味着把数据分别存在两个<code>集合</code>当，而Mongodb是不支持事务的，所以，在一些强事务场景是不适合的<br><a id="more"></a></p>
+<h3 id="方式一：内嵌"><a href="#方式一：内嵌" class="headerlink" title="方式一：内嵌"></a>方式一：内嵌</h3><h4 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">db.users.insert(</span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'lvxx'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">    address:&#123;</span><br><span class="line">        info:<span class="string">'SongJiang,ShangHai City'</span>,</span><br><span class="line">        used:<span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">db.users.insert(&#123;</span><br><span class="line">    name:<span class="string">'maschen'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">    address:&#123;</span><br><span class="line">        info:<span class="string">'XiaSha,HangZhou City'</span>,</span><br><span class="line">        used:<span class="number">1</span></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 查询 </span><br><span class="line">db.users.find(&#123;</span><br><span class="line">    &apos;address.used&apos;:1</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 更新</span><br><span class="line">db.users.update(</span><br><span class="line">&#123;</span><br><span class="line">	&apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    #更新的时候结构要写全，否则结构会乱掉</span><br><span class="line">	$set:&#123;address:&#123;&apos;info&apos;:&apos;SongJiang,ShangHai City&apos;,&apos;used&apos;:0&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h4 id="删除子文档里的某个字段"><a href="#删除子文档里的某个字段" class="headerlink" title="删除子文档里的某个字段"></a>删除子文档里的某个字段</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 删除子文档里的某个字段 </span><br><span class="line">db.users.update(</span><br><span class="line">&#123;</span><br><span class="line">	&apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	$unset:&#123;&quot;address.used&quot;:&quot;&quot;&#125; //$unset</span><br><span class="line">&#125;,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h4 id="删除整个子文档"><a href="#删除整个子文档" class="headerlink" title="删除整个子文档"></a>删除整个子文档</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 删除整个子文档</span><br><span class="line">db.users.update(</span><br><span class="line">&#123;</span><br><span class="line">	&apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	$unset:&#123;address:&#123;&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="方式二：引用"><a href="#方式二：引用" class="headerlink" title="方式二：引用"></a>方式二：引用</h3><h4 id="插入数据-1"><a href="#插入数据-1" class="headerlink" title="插入数据"></a>插入数据</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">db.users.insertMany([ <span class="comment">//是数组</span></span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'lvxx'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'maschen'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line">db.address.insertMany([&#123;</span><br><span class="line">    name:<span class="string">'ShangHai'</span>,</span><br><span class="line">    code:<span class="number">1000</span>,</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'HangZhou'</span>,</span><br><span class="line">    code:<span class="number">1001</span>,</span><br><span class="line">&#125;]);</span><br></pre></td></tr></table></figure>
+<h4 id="更新-1"><a href="#更新-1" class="headerlink" title="更新"></a>更新</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#更新</span><br><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $set:&#123;address:ObjectId(&apos;5bfb936de983c23ee94af93d&apos;)&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"># 查询略，和普通查询无区别，和mysql不同，是不能联表查询，</span><br><span class="line">所以只能分两次查询，拿到address object id ,然后再address里进行查询</span><br></pre></td></tr></table></figure>
+<h2 id="一对多"><a href="#一对多" class="headerlink" title="一对多"></a>一对多</h2><h3 id="内嵌"><a href="#内嵌" class="headerlink" title="内嵌"></a>内嵌</h3><h4 id="插入数据-2"><a href="#插入数据-2" class="headerlink" title="插入数据"></a>插入数据</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># 插入数据</span><br><span class="line">db.users.insertMany([</span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'lvxx'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">    address:[</span><br><span class="line">        &#123;</span><br><span class="line">            info:<span class="string">'SongJiang,ShangHai City'</span>,</span><br><span class="line">            used:<span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            info:<span class="string">'XuHui,ShangHai City'</span>,</span><br><span class="line">            used:<span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    name:<span class="string">'maschen'</span>,</span><br><span class="line">    age:<span class="number">31</span>,</span><br><span class="line">    address:[</span><br><span class="line">        &#123;</span><br><span class="line">            info:<span class="string">'XiaSha,HangZhou City'</span>,</span><br><span class="line">            used:<span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h4 id="查询-1"><a href="#查询-1" class="headerlink" title="查询"></a>查询</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 查询 </span><br><span class="line">db.users.find(&#123;</span><br><span class="line">    &apos;address.used&apos;:0</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="添加子文档"><a href="#添加子文档" class="headerlink" title="添加子文档"></a>添加子文档</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#添加子文档</span><br><span class="line">db.users.update(&#123;</span><br><span class="line">&apos;name&apos;:&apos;maschen&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">$push:&#123; //添加子项用 $push</span><br><span class="line">	address:&#123;</span><br><span class="line">		&apos;info&apos;:&apos;WenZhou,ZheJiang&apos;,</span><br><span class="line">		&apos;used&apos;:0</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="更新子文档中的某一个字段"><a href="#更新子文档中的某一个字段" class="headerlink" title="更新子文档中的某一个字段"></a>更新子文档中的某一个字段</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#更新子文档中的某一个字段</span><br><span class="line"></span><br><span class="line">db.users.update(&#123;</span><br><span class="line">&apos;name&apos;:&apos;maschen&apos;</span><br><span class="line">&apos;address.used&apos;:1 //条件必须，#需注意这里如果匹配到两条，则只更新一条,子文档无法批量更新，需要批量更新，则需要循环处理</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	$set:&#123;&quot;address.$.used&quot;:0&#125;</span><br><span class="line">&#125;,false,true</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h4 id="更新子文档且子文档是多个条件"><a href="#更新子文档且子文档是多个条件" class="headerlink" title="更新子文档且子文档是多个条件"></a>更新子文档且子文档是多个条件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 更新子文档且子文档是多个条件</span><br><span class="line"></span><br><span class="line">db.users.update(&#123;</span><br><span class="line">&apos;name&apos;:&apos;maschen&apos;,</span><br><span class="line">address:&#123;$elemMatch:&#123;used:1,info:&apos;xxx&apos;&#125;&#125;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	$set:&#123;&quot;address.$.used&quot;:0&#125;</span><br><span class="line">&#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h4 id="移除操作"><a href="#移除操作" class="headerlink" title="移除操作"></a>移除操作</h4><p>移除数组中的第一个或者最后一个元素(1为最后一个元素，-1为第一个元素)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 移除操作</span><br><span class="line">db.users.update(&#123;</span><br><span class="line">&apos;name&apos;:&apos;maschen&apos;</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	$pop:&#123;address:1&#125;</span><br><span class="line">&#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><h4 id="初始化数据"><a href="#初始化数据" class="headerlink" title="初始化数据"></a>初始化数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">db.users.insertMany([</span><br><span class="line">&#123;</span><br><span class="line">    name:&apos;lvxx&apos;,</span><br><span class="line">    age:30,</span><br><span class="line">	address:[]</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    name:&apos;maschen&apos;,</span><br><span class="line">    age:28,</span><br><span class="line">	address:[]</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">db.address.insertMany([</span><br><span class="line">&#123;</span><br><span class="line">    info:&apos;ShangHai&apos;,</span><br><span class="line">    code:30</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    name:&apos;HangZhou&apos;,</span><br><span class="line">    code:28</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    info:&apos;WenZhou&apos;,</span><br><span class="line">    code:17</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h4 id="设置对应关系"><a href="#设置对应关系" class="headerlink" title="设置对应关系"></a>设置对应关系</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $set:&#123;address:[</span><br><span class="line">        ObjectId(&apos;5bfbad4ae983c24f3471d7c7&apos;),</span><br><span class="line">        ObjectId(&apos;5bfbad4ae983c24f3471d7c9&apos;),</span><br><span class="line">    ]&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="追加"><a href="#追加" class="headerlink" title="追加"></a>追加</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $push:&#123;address:ObjectId(&apos;5bfbad4ae983c24f3471d7c8&apos;)&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $pop:&#123;address:-1&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"># 删除指定元素</span><br><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $pull:&#123;address:ObjectId(&apos;5bfbad4ae983c24f3471d7c8&apos;)&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="查询-2"><a href="#查询-2" class="headerlink" title="查询"></a>查询</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db.users.find(&#123;</span><br><span class="line">   address:&#123;$in:[ObjectId(&apos;5bfbad4ae983c24f3471d7c7&apos;)]&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="多对多"><a href="#多对多" class="headerlink" title="多对多"></a>多对多</h2><h3 id="初始化数据-1"><a href="#初始化数据-1" class="headerlink" title="初始化数据"></a>初始化数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">db.users.insertMany([</span><br><span class="line">&#123;</span><br><span class="line">    name:&apos;lvxx&apos;,</span><br><span class="line">    age:30,</span><br><span class="line">	roles:[]</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    name:&apos;maschen&apos;,</span><br><span class="line">    age:28,</span><br><span class="line">	roles:[]</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">db.roles.insertMany([</span><br><span class="line">&#123;</span><br><span class="line">    name:&apos;超级管理员&apos;,</span><br><span class="line">	users:[]</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    name:&apos;普通管理员&apos;,</span><br><span class="line">	users:[]</span><br><span class="line">&#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h3 id="设置数据"><a href="#设置数据" class="headerlink" title="设置数据"></a>设置数据</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">db.users.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;lvxx&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $set:&#123;roles:[</span><br><span class="line">        ObjectId(&apos;5bfbb7e9e983c24f3471d7ce&apos;),</span><br><span class="line">        ObjectId(&apos;5bfbb7e9e983c24f3471d7cf&apos;),</span><br><span class="line">    ]&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">db.roles.update(&#123;</span><br><span class="line">    &apos;name&apos;:&apos;超级管理员&apos;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    $set:&#123;users:[</span><br><span class="line">        ObjectId(&apos;5bfbb7c0e983c24f3471d7cc&apos;),</span><br><span class="line">        ObjectId(&apos;5bfbb7c0e983c24f3471d7cd&apos;),</span><br><span class="line">    ]&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="查询和更新及删除请参考前面的一对多-略"><a href="#查询和更新及删除请参考前面的一对多-略" class="headerlink" title="查询和更新及删除请参考前面的一对多(略)"></a>查询和更新及删除请参考前面的一对多(略)</h3><h2 id="关于mysql迁移至MongoDB"><a href="#关于mysql迁移至MongoDB" class="headerlink" title="关于mysql迁移至MongoDB"></a>关于mysql迁移至MongoDB</h2><p>如果是单表的话，不牵涉一些关联关系，可以使用一些mysql工具，比如<code>phpMyAdmin</code>,<code>Navicat for mysql</code> 等工具导出excel 或者是<code>csv</code>，然后再使用 <code>Navicat for MongoDB</code> 或者mongodb的命令，可以进行直接导入。<br>如果有关联关系的，还是需要借助脚本来进行处理</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/29/mongodb-command/" rel="next" title="MongoDB常用命令">
+                <i class="fa fa-chevron-left"></i> MongoDB常用命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv044x9dh7j305k05kglh.jpg"
+               alt="Sid Lee" />
+          <p class="site-author-name" itemprop="name">Sid Lee</p>
+           
+              <p class="site-description motion-element" itemprop="description">记录点滴领悟。</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB关联关系"><span class="nav-number">1.</span> <span class="nav-text">MongoDB关联关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一对一"><span class="nav-number">1.1.</span> <span class="nav-text">一对一</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方式一：内嵌"><span class="nav-number">1.1.1.</span> <span class="nav-text">方式一：内嵌</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#插入数据"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更新"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除子文档里的某个字段"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">删除子文档里的某个字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除整个子文档"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">删除整个子文档</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方式二：引用"><span class="nav-number">1.1.2.</span> <span class="nav-text">方式二：引用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#插入数据-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更新-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">更新</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一对多"><span class="nav-number">1.2.</span> <span class="nav-text">一对多</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内嵌"><span class="nav-number">1.2.1.</span> <span class="nav-text">内嵌</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#插入数据-2"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询-1"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加子文档"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">添加子文档</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更新子文档中的某一个字段"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">更新子文档中的某一个字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更新子文档且子文档是多个条件"><span class="nav-number">1.2.1.5.</span> <span class="nav-text">更新子文档且子文档是多个条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移除操作"><span class="nav-number">1.2.1.6.</span> <span class="nav-text">移除操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引用"><span class="nav-number">1.2.2.</span> <span class="nav-text">引用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化数据"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">初始化数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#设置对应关系"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">设置对应关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#追加"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">追加</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询-2"><span class="nav-number">1.2.2.5.</span> <span class="nav-text">查询</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多对多"><span class="nav-number">1.3.</span> <span class="nav-text">多对多</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化数据-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">初始化数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置数据"><span class="nav-number">1.3.2.</span> <span class="nav-text">设置数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询和更新及删除请参考前面的一对多-略"><span class="nav-number">1.3.3.</span> <span class="nav-text">查询和更新及删除请参考前面的一对多(略)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于mysql迁移至MongoDB"><span class="nav-number">1.4.</span> <span class="nav-text">关于mysql迁移至MongoDB</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sid Lee</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("jtTza3kPO86OkRbmhoMmJ6hS-gzGzoHsz", "apDrFIixsAly3WEeOGyzWSGr");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
