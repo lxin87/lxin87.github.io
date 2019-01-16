@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="技巧," />
+  <meta name="keywords" content="docker,swoft," />
 
 
 
@@ -94,22 +94,20 @@
 
 
 
-<meta name="description" content="关于PostMan通过post方式传递数组[toc] 背景我们在开发的时候，有时候会遇到一些复杂的表单，而提交的数据格式也是相对比较复杂，提交数组是常见的一种形式，目前前后端分离的开发模式也渐渐的普及开，所以后端在开发接口完成之后，要进行模拟测试，Postman也是大家经常用的，那么如何提交数组呢?">
-<meta name="keywords" content="技巧">
+<meta name="description" content="Docker下搭建swoft开发环境[toc] 前言使用Laravel也大概有三年时间了，很喜欢这款框架，但是也知道这个框架的弊端在哪里，目前Laravel仅适合开发一些企业低频应用，也就是说，并发量不是很高的项目，比如一些管理系统什么的，因为Laravel太重，加载的文件太多，在高并发，高访问的情况下优化起来比较困难，当然，也有人说，不是还有Lumen么，说实话，虽然我用了Laravel三年多，">
+<meta name="keywords" content="docker,swoft">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于PostMan通过post方式传递数组">
-<meta property="og:url" content="http://sidlee.xyz/2018/10/16/post-array-on-postman/index.html">
+<meta property="og:title" content="Docker下搭建swoft开发环境">
+<meta property="og:url" content="http://sidlee.xyz/2019/01/16/swoft-dev-env-in-docker/index.html">
 <meta property="og:site_name" content="sid.lee&#39;s blog">
-<meta property="og:description" content="关于PostMan通过post方式传递数组[toc] 背景我们在开发的时候，有时候会遇到一些复杂的表单，而提交的数据格式也是相对比较复杂，提交数组是常见的一种形式，目前前后端分离的开发模式也渐渐的普及开，所以后端在开发接口完成之后，要进行模拟测试，Postman也是大家经常用的，那么如何提交数组呢?">
+<meta property="og:description" content="Docker下搭建swoft开发环境[toc] 前言使用Laravel也大概有三年时间了，很喜欢这款框架，但是也知道这个框架的弊端在哪里，目前Laravel仅适合开发一些企业低频应用，也就是说，并发量不是很高的项目，比如一些管理系统什么的，因为Laravel太重，加载的文件太多，在高并发，高访问的情况下优化起来比较困难，当然，也有人说，不是还有Lumen么，说实话，虽然我用了Laravel三年多，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://res.sidlee.xyz/blog20181016131302.png">
-<meta property="og:image" content="http://res.sidlee.xyz/blog20181016132616.png">
-<meta property="og:image" content="http://res.sidlee.xyz/blog20181016132847.png">
-<meta property="og:updated_time" content="2019-01-16T01:16:38.243Z">
+<meta property="og:image" content="https://image-static.segmentfault.com/257/768/2577684899-5b574bc2e842e">
+<meta property="og:updated_time" content="2019-01-16T03:42:33.770Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于PostMan通过post方式传递数组">
-<meta name="twitter:description" content="关于PostMan通过post方式传递数组[toc] 背景我们在开发的时候，有时候会遇到一些复杂的表单，而提交的数据格式也是相对比较复杂，提交数组是常见的一种形式，目前前后端分离的开发模式也渐渐的普及开，所以后端在开发接口完成之后，要进行模拟测试，Postman也是大家经常用的，那么如何提交数组呢?">
-<meta name="twitter:image" content="http://res.sidlee.xyz/blog20181016131302.png">
+<meta name="twitter:title" content="Docker下搭建swoft开发环境">
+<meta name="twitter:description" content="Docker下搭建swoft开发环境[toc] 前言使用Laravel也大概有三年时间了，很喜欢这款框架，但是也知道这个框架的弊端在哪里，目前Laravel仅适合开发一些企业低频应用，也就是说，并发量不是很高的项目，比如一些管理系统什么的，因为Laravel太重，加载的文件太多，在高并发，高访问的情况下优化起来比较困难，当然，也有人说，不是还有Lumen么，说实话，虽然我用了Laravel三年多，">
+<meta name="twitter:image" content="https://image-static.segmentfault.com/257/768/2577684899-5b574bc2e842e">
 
 
 
@@ -138,13 +136,13 @@
 
 
 
-  <link rel="canonical" href="http://sidlee.xyz/2018/10/16/post-array-on-postman/"/>
+  <link rel="canonical" href="http://sidlee.xyz/2019/01/16/swoft-dev-env-in-docker/"/>
 
 
 
 
 
-  <title>关于PostMan通过post方式传递数组 | sid.lee's blog</title>
+  <title>Docker下搭建swoft开发环境 | sid.lee's blog</title>
   
 
 
@@ -287,7 +285,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://sidlee.xyz/2018/10/16/post-array-on-postman/">
+    <link itemprop="mainEntityOfPage" href="http://sidlee.xyz/2019/01/16/swoft-dev-env-in-docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sid Lee">
@@ -304,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">关于PostMan通过post方式传递数组</h1>
+          <h1 class="post-title" itemprop="name headline">Docker下搭建swoft开发环境</h1>
         
 
         <div class="post-meta">
@@ -316,8 +314,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-16T14:22:11+08:00">
-                2018-10-16
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-16T11:40:30+08:00">
+                2019-01-16
               </time>
             
 
@@ -339,8 +337,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/laravel/" itemprop="url" rel="index">
-                    <span itemprop="name">laravel</span>
+                  <a href="/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
                   </a>
                 </span>
 
@@ -356,7 +354,7 @@
 
           
           
-             <span id="/2018/10/16/post-array-on-postman/" class="leancloud_visitors" data-flag-title="关于PostMan通过post方式传递数组">
+             <span id="/2019/01/16/swoft-dev-env-in-docker/" class="leancloud_visitors" data-flag-title="Docker下搭建swoft开发环境">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -387,13 +385,37 @@
       
 
       
-        <h1 id="关于PostMan通过post方式传递数组"><a href="#关于PostMan通过post方式传递数组" class="headerlink" title="关于PostMan通过post方式传递数组"></a>关于PostMan通过post方式传递数组</h1><p>[toc]</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我们在开发的时候，有时候会遇到一些复杂的表单，而提交的数据格式也是相对比较复杂，提交数组是常见的一种形式，目前前后端分离的开发模式也渐渐的普及开，所以后端在开发接口完成之后，要进行模拟测试，<code>Postman</code>也是大家经常用的，那么如何提交数组呢?</p>
+        <h1 id="Docker下搭建swoft开发环境"><a href="#Docker下搭建swoft开发环境" class="headerlink" title="Docker下搭建swoft开发环境"></a>Docker下搭建swoft开发环境</h1><p>[toc]</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用<code>Laravel</code>也大概有三年时间了，很喜欢这款框架，但是也知道这个框架的弊端在哪里，目前<code>Laravel</code>仅适合开发一些企业低频应用，也就是说，并发量不是很高的项目，比如一些管理系统什么的，因为<code>Laravel</code>太重，加载的文件太多，在高并发，高访问的情况下优化起来比较困难，当然，也有人说，不是还有<code>Lumen</code>么，说实话，虽然我用了<code>Laravel</code>三年多，但我基本没怎么用过<code>Lumen</code>,所以我不对这些做过多评论。</p>
+<p>后来在网上看到关于<code>swoole</code>的一些介绍，感觉像是神器，奈何文档比较感人，一直没怎么入门，后来看到<code>swoft</code>框架，是基于<code>swoole</code>的一些封装，于是就研究下。</p>
 <a id="more"></a>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><h3 id="场景一"><a href="#场景一" class="headerlink" title="场景一"></a>场景一</h3><p><img src="http://res.sidlee.xyz/blog20181016131302.png" alt=""></p>
-<p>这个时候，我们需要保存商品规格，只需要保存对应的规格id，图中是多选，那么需要传一个规格的 <code>id list</code> 过去,如下图:</p>
-<p><img src="http://res.sidlee.xyz/blog20181016132616.png" alt=""></p>
-<h3 id="场景二-多维数组"><a href="#场景二-多维数组" class="headerlink" title="场景二 多维数组"></a>场景二 多维数组</h3><p><img src="http://res.sidlee.xyz/blog20181016132847.png" alt=""></p>
+<p>参考地址: <a href="https://segmentfault.com/a/1190000015759752" target="_blank" rel="noopener">https://segmentfault.com/a/1190000015759752</a></p>
+<h2 id="安装docker-amp-docker-compose"><a href="#安装docker-amp-docker-compose" class="headerlink" title="安装docker  &amp; docker-compose"></a>安装docker  &amp; docker-compose</h2><p>略，网上一大把，请自行搜索或参考下我之前的博文</p>
+<h2 id="Swoft开发环境"><a href="#Swoft开发环境" class="headerlink" title="Swoft开发环境"></a>Swoft开发环境</h2><ul>
+<li>git clone <a href="https://github.com/swoft-cloud/swoft" target="_blank" rel="noopener">https://github.com/swoft-cloud/swoft</a></li>
+</ul>
+<p>打开看下<code>docker-compose.yaml</code>文件内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">version: &apos;3&apos;</span><br><span class="line">services:</span><br><span class="line">    swoft:</span><br><span class="line">        container_name: swoft //窗口名</span><br><span class="line">        image: swoft/swoft //镜像名</span><br><span class="line">        ports: //端口</span><br><span class="line">            - &quot;80:80&quot;</span><br><span class="line">        volumes: //挂载目录</span><br><span class="line">            - ./:/var/www/swoft</span><br><span class="line">        stdin_open: true </span><br><span class="line">        tty: true</span><br><span class="line">        entrypoint: [&quot;php&quot;, &quot;/var/www/swoft/bin/swoft&quot;, &quot;start&quot;]</span><br></pre></td></tr></table></figure>
+<p>上面的是官方默认的<code>docker-compose.ymal</code>，使用<code>docker-compose -d up</code>命令进行启动安装，但实际上，我是安装成功了，但是使用<code>docker-compose -ps</code> 查到的<code>state</code>是<code>Exiting</code>状态，应该是有异常了，但是不知道什么原因，于是参考上面的博客，使用它的<code>yaml文件</code>，如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">version: &apos;3&apos;</span><br><span class="line">services:</span><br><span class="line">    swoft:</span><br><span class="line">        container_name: swoft</span><br><span class="line">        image: swoft/swoft</span><br><span class="line">        ports:</span><br><span class="line">            - &quot;80:80&quot;</span><br><span class="line">        volumes:</span><br><span class="line">            - ./:/var/www/swoft</span><br><span class="line">        stdin_open: true</span><br><span class="line">        tty: true</span><br><span class="line">        entrypoint: [&quot;sh&quot;]</span><br></pre></td></tr></table></figure>
+<p>然后 <code>dokcer-compose -d up</code></p>
+<p>备注：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR: for swoft Cannot start service swoft: b&apos;driver failed programming external connectivity on endpoint swoft(dab0f4d00620e2f5c07e33084ca5cac6f08cb48018d6b737eadc035e5aa0b597): Bind for 0.0.0.0:80 failed: port is already allocated&apos;</span><br></pre></td></tr></table></figure></p>
+<p>如果遇到上面提示，就说明80端口被占了，所以，要修改下上面的端口，比如改成81</p>
+<h2 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h2><ul>
+<li>docker ps 查看容器id</li>
+<li>docker exec -it 容器id bash  或者 docker exec -it swoft bash</li>
+<li>php -v  or php -m 查看php信息</li>
+<li>composer install 安装依赖</li>
+<li>启动swoft服务   php bin/swoft start</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">root@f22173763374:/var/www/swoft# php bin/swoft start</span><br><span class="line">                         Server Information</span><br><span class="line">********************************************************************</span><br><span class="line">* HTTP | host: 0.0.0.0, port: 81, type: 1, worker: 1, mode: 3</span><br><span class="line">* TCP  | host: 0.0.0.0, port: 8099, type: 1, worker: 1 (Enabled)</span><br><span class="line">********************************************************************</span><br><span class="line">Server has been started. (master PID: 15, manager PID: 16)</span><br><span class="line">You can use CTRL + C to stop run.</span><br></pre></td></tr></table></figure>
+<p>看到如上信息，就说明运行成功了！</p>
+<p>但是，但是，但是，有个问题，我们在外面如何访问呢?这个问题卡了我好一会儿</p>
+<p>因为我改了端口的原因，所以访问的地址应该是<code>http://127.0.0.1:81</code> 但实际是不行的，访问不到，后来，我才突然想起来，<code>swoft</code>的配置文件<code>.env</code>里，有一个关于<code>http服务</code>的配置，如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># HTTP</span><br><span class="line">HTTP_HOST=0.0.0.0</span><br><span class="line">HTTP_PORT=81 //把这里的端口也改成81</span><br><span class="line">HTTP_MODE=SWOOLE_PROCESS</span><br><span class="line">HTTP_TYPE=SWOOLE_SOCK_TCP</span><br></pre></td></tr></table></figure>
+<p>然后把上面的<code>swoft</code>服务  <code>ctrl+c</code>，断开，重新运行下，然后再使用<code>http://127.0.0.1:81</code> 就ok了</p>
+<p>如下图：</p>
+<p><img src="https://image-static.segmentfault.com/257/768/2577684899-5b574bc2e842e" alt="image"></p>
 
       
     </div>
@@ -411,7 +433,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/技巧/" rel="tag"># 技巧</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/swoft/" rel="tag"># swoft</a>
           
         </div>
       
@@ -424,8 +448,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/08/iptables/" rel="next" title="iptables">
-                <i class="fa fa-chevron-left"></i> iptables
+              <a href="/2018/12/05/mongodb-relations/" rel="next" title="MongoDB关联关系">
+                <i class="fa fa-chevron-left"></i> MongoDB关联关系
               </a>
             
           </div>
@@ -433,10 +457,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/23/docker-command/" rel="prev" title="Docker常用命令">
-                Docker常用命令 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -570,7 +590,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于PostMan通过post方式传递数组"><span class="nav-number">1.</span> <span class="nav-text">关于PostMan通过post方式传递数组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案"><span class="nav-number">1.2.</span> <span class="nav-text">方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#场景一"><span class="nav-number">1.2.1.</span> <span class="nav-text">场景一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#场景二-多维数组"><span class="nav-number">1.2.2.</span> <span class="nav-text">场景二 多维数组</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker下搭建swoft开发环境"><span class="nav-number">1.</span> <span class="nav-text">Docker下搭建swoft开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-amp-docker-compose"><span class="nav-number">1.2.</span> <span class="nav-text">安装docker  &amp; docker-compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Swoft开发环境"><span class="nav-number">1.3.</span> <span class="nav-text">Swoft开发环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进入容器"><span class="nav-number">1.4.</span> <span class="nav-text">进入容器</span></a></li></ol></li></ol></div>
             
 
           </div>
