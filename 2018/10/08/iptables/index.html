@@ -102,13 +102,13 @@
 <meta property="og:site_name" content="sid.lee&#39;s blog">
 <meta property="og:description" content="iptables参考地址:http://www.zsythink.net [TOC] centos7的防火墙改为iptables123456789101112131415161718192021firewall-cmd --staterunning# 更改firewall 为 iptablessystemctl stop firewalld #停止firewall防火墙systemctl disa">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://paodxwaf5.bkt.clouddn.com/blog20180930112818.png">
-<meta property="og:image" content="http://paodxwaf5.bkt.clouddn.com/blog20180930144110.png">
-<meta property="og:updated_time" content="2018-10-08T05:20:31.352Z">
+<meta property="og:image" content="http://res.sidlee.xyz/blog20180930112818.png">
+<meta property="og:image" content="http://res.sidlee.xyz/blog20180930144110.png">
+<meta property="og:updated_time" content="2019-01-16T01:16:39.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iptables">
 <meta name="twitter:description" content="iptables参考地址:http://www.zsythink.net [TOC] centos7的防火墙改为iptables123456789101112131415161718192021firewall-cmd --staterunning# 更改firewall 为 iptablessystemctl stop firewalld #停止firewall防火墙systemctl disa">
-<meta name="twitter:image" content="http://paodxwaf5.bkt.clouddn.com/blog20180930112818.png">
+<meta name="twitter:image" content="http://res.sidlee.xyz/blog20180930112818.png">
 
 
 
@@ -407,7 +407,7 @@
 <li>LOG 在/var/log/message文件中记录日志信息</li>
 </ul>
 <h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><h3 id="查看规则"><a href="#查看规则" class="headerlink" title="查看规则"></a>查看规则</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">iptables -t raw -L</span><br><span class="line"><span class="comment"># -t 是指哪个表，如果省略，则表示是列出filter表 即iptables -L 等价于 iptables -t filter -L</span></span><br><span class="line"></span><br><span class="line">iptables --line -nvxL INPUT</span><br><span class="line"></span><br><span class="line"><span class="comment"># --line 显示行号</span></span><br><span class="line"><span class="comment"># -n 表示不对名称进行反解，直接显示ip</span></span><br><span class="line"><span class="comment"># policy ACCEPT policy表示默认策略，通过这个，可以设定黑名单，</span></span><br><span class="line"><span class="comment"># -x 显示精确的计数器，比如接收多少数据包，总大小是多少</span></span><br><span class="line"><span class="comment"># -v 表示显示更多详细信息</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://paodxwaf5.bkt.clouddn.com/blog20180930112818.png" alt=""></p>
+<p><img src="http://res.sidlee.xyz/blog20180930112818.png" alt=""></p>
 <h3 id="增加规则"><a href="#增加规则" class="headerlink" title="增加规则"></a>增加规则</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">iptables -I INPUT -s 10.0.1.251 -j DROP</span><br><span class="line"></span><br><span class="line"># -t filter 省略，默认操作的是filter 表</span><br><span class="line"># -I insert  不加序号的情况下，则会在第一个位置插入规则，如果加序号，例 -I INPUT 2</span><br><span class="line"># -s 源地址</span><br><span class="line"># -j 前面的匹配条件满足，则执行该动作 DROP (丢弃)</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>注意，只有 -I 也主是在insert 的条件下，才能加那个序号，还有规则的顺序很重要，如果搞错了顺序，会有问题，看下面</p>
@@ -426,7 +426,7 @@
 <p>替换很容易出错，大多情况下，是把当前的规则删除，重新添加</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># ip被拒绝访问后的相关提示</span><br><span class="line">[root@node01 ~]# ping 10.0.0.102</span><br><span class="line">PING 10.0.0.102 (10.0.0.102) 56(84) bytes of data.</span><br><span class="line">From 10.0.0.102 icmp_seq=1 Destination Port Unreachable</span><br><span class="line">From 10.0.0.102 icmp_seq=2 Destination Port Unreachable</span><br><span class="line">^C</span><br><span class="line">--- 10.0.0.102 ping statistics ---</span><br><span class="line">2 packets transmitted, 0 received, +2 errors, 100% packet loss, time 1000ms</span><br></pre></td></tr></table></figure>
-<h3 id="修改链默认策略"><a href="#修改链默认策略" class="headerlink" title="修改链默认策略"></a>修改链默认策略</h3><p><img src="http://paodxwaf5.bkt.clouddn.com/blog20180930144110.png" alt=""></p>
+<h3 id="修改链默认策略"><a href="#修改链默认策略" class="headerlink" title="修改链默认策略"></a>修改链默认策略</h3><p><img src="http://res.sidlee.xyz/blog20180930144110.png" alt=""></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -P INPUT DROP</span><br><span class="line"></span><br><span class="line"># -P 指定要修改的链，上面的意思为修改filter表中的INPUT连接的默认策略改为DROP</span><br></pre></td></tr></table></figure>
 <h3 id="保存规则"><a href="#保存规则" class="headerlink" title="保存规则"></a>保存规则</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># centos 6</span><br><span class="line">service iptables save </span><br><span class="line"></span><br><span class="line"># centos 7</span><br><span class="line">systemctl save iptables</span><br><span class="line"></span><br><span class="line"># 通用方法</span><br><span class="line"># 重定向</span><br><span class="line">iptables-save &gt; /etc/systemconfig/iptables</span><br><span class="line"></span><br><span class="line"># 备份</span><br><span class="line">iptables-save &gt; /var/bak/iptables.bak</span><br><span class="line"></span><br><span class="line">#恢复</span><br><span class="line">iptables-resotre &lt; /var/bak/iptables.bak</span><br></pre></td></tr></table></figure>
 <h2 id="匹配条件详解"><a href="#匹配条件详解" class="headerlink" title="匹配条件详解"></a>匹配条件详解</h2><h3 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h3><ul>
@@ -705,7 +705,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
